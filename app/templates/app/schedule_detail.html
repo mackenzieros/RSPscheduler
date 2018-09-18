@@ -1,0 +1,19 @@
+{% extends "base_template.html" %}
+
+{% block content %}
+    <h1>{{schedule.title}}</h1>
+    <p>{{schedule.start_date}} - {{schedule.end_date}}</p>
+    <hr>
+    <table>
+        <tr>
+            {% for key in appts.keys %}
+                <th>{{key}}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+            {% for key, value in appts.items %}
+                <td>{{value}}</td>
+            {% endfor %}
+        </tr>
+    </table>
+{% endblock %}

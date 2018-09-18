@@ -1,0 +1,6 @@
+{% extends "base_template.html" %}
+
+{% block content %}
+    <h1>{{student.last_name}}, {{student.middle_name|default_if_none:""}} {{student.first_name}}</h1>
+    <p>Services have been allocated: {{ student.is_serviced }}</p>
+{% endblock %}

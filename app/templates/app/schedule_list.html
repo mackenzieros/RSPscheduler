@@ -1,0 +1,15 @@
+{% extends "base_template.html" %}
+
+{% block content %}
+    <h1>My Schedules: </h1>
+    <br>
+    {% if schedule_list %}
+    <ol>
+        {% for schedule in schedule_list %}
+            <li>
+                <a href="{{ schedule.get_absolute_url }}">{{ schedule.title }}</a>
+            </li>
+        {% endfor %}
+    </ol>
+    {% endif %}
+{% endblock %}

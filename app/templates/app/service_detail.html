@@ -1,0 +1,12 @@
+{% extends "base_template.html" %}
+
+{% block content %}
+    <h1>{{service}}</h1>
+    <hr>
+    <p>Scheduled services:</p>
+    <ul>
+        {% for serviceinstance in service.stud_serviceinstances.all %}
+            <li>{{serviceinstance}}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

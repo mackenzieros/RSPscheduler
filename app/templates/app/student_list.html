@@ -1,0 +1,15 @@
+{% extends "base_template.html" %}
+
+{% block content %}
+    <h1>My Students: </h1>
+    <br>
+    {% if student_list %}
+    <ol>
+        {% for student in student_list %}
+            <li>
+                <a href="{{ student.get_absolute_url }}">{{student.last_name}}, {{student.first_name}}</a>
+            </li>
+        {% endfor %}
+    </ol>
+    {% endif %}
+{% endblock %}

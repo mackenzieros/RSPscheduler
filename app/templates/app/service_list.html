@@ -1,0 +1,15 @@
+{% extends "base_template.html" %}
+
+{% block content %}
+    <h1>My Services: </h1>
+    <br>
+    {% if service_list %}
+    <ol>
+        {% for service in service_list %}
+            <li>
+                <a href="{{service.get_absolute_url}}">{{service}}</a>
+            </li>
+        {% endfor %}
+    </ol>
+    {% endif %}
+{% endblock %}

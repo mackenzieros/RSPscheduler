@@ -23,6 +23,7 @@ class Student(models.Model):
     def get_absolute_url(self):
         """Returns the url to access a detail record for this student"""
         return reverse('student-detail', args=[str(self.id)])
+    
     @property
     def is_serviced(self):
         for service in self.services.all():
@@ -60,10 +61,10 @@ class Service(models.Model):
     
     total_time_req = models.IntegerField(help_text='Enter total time required')
     satisfied = models.BooleanField(help_text='Check if this service has been satisfied')
-
+        
     def __str__(self):
         """String for representing the Model "Service" object."""
-        return f'{str(self.student)}: {self.subject} {self.service_type}'
+        return f'{self.subject} {self.service_type}: {str(self.student)}'
 
     def get_absolute_url(self):
         """Returns a URL for displaying all instances of this service"""

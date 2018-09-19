@@ -1,6 +1,12 @@
 {% extends "base_template.html" %}
 
 {% block content %}
+    <form action="{% url 'update-student' student.id %}">
+        <input type="submit" value="Update student"/>
+    </form>
+    <form action="{% url 'delete-student' student.id %}">
+        <input type="submit" value="Delete student"/>
+    </form>
     <h1>{{student.last_name}}, {{student.middle_name|default_if_none:""}} {{student.first_name}}</h1>
     <p>Services have been allocated: {{ student.is_serviced }}</p>
 {% endblock %}

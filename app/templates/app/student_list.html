@@ -1,15 +1,26 @@
 {% extends "base_template.html" %}
 
 {% block content %}
+    <form action="{% url 'create-student'%}">
+        <input type="submit" value="Add student"/>
+    </form>
     <h1>My Students: </h1>
     <br>
     {% if student_list %}
-    <ol>
         {% for student in student_list %}
-            <li>
-                <a href="{{ student.get_absolute_url }}">{{student.last_name}}, {{student.first_name}}</a>
-            </li>
+            <h4><a href="{{ student.get_absolute_url }}">{{student}}</a></h4>
+            {% if student.is_serviced %}
+                <h5 class="text-success">Services: Satisfied</h5>
+            {% else %}
+                <h5 class="text-danger">Services: Not Satisfied</h5>
+            {% endif %}
+            <ol>
+                {% for service in  student.services.all %}
+                    <li>
+                        <a href="{{service.get_absolute_url}}">{{service}}</a>
+                    </li>
+                {% endfor %}
+            </ol>
         {% endfor %}
-    </ol>
     {% endif %}
 {% endblock %}

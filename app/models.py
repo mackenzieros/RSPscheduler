@@ -2,6 +2,8 @@ from django.db import models
 import uuid # placeholder for student IDs
 from django.urls import reverse # Used to generate URLs by reversing the URL patterns
 from django.contrib.auth.models import User
+from django.utils import timezone
+from datetime import timedelta
 
 # Create your models here.
 class Student(models.Model):
@@ -23,7 +25,8 @@ class Student(models.Model):
     def get_absolute_url(self):
         """Returns the url to access a detail record for this student"""
         return reverse('student-detail', args=[str(self.id)])
-    
+    # Checks all the services appointed to the student, will be True if all the
+    # services are met, false otherwise
     @property
     def is_serviced(self):
         for service in self.services.all():
@@ -48,12 +51,12 @@ class Service(models.Model):
         )
 
     SERVICES = (
-        ('PI', 'Push-In'),
-        ('PO', 'Pull-Out')
+        ('Push-In', 'Push-In'),
+        ('Pull-Out', 'Pull-Out')
         )
         
     service_type = models.CharField(
-        max_length=2,
+        max_length=8,
         choices=SERVICES,
         default=None,
         help_text='Service type'
@@ -70,42 +73,72 @@ class Service(models.Model):
         """Returns a URL for displaying all instances of this service"""
         return reverse('service-detail', args=[str(self.id)])
 
+    # Goes through all the service instances associated with this service
+    # If each service instance that belongs to an active calendar adds up to
+    # the time required, then the service is satisfied!
     @property
     def is_satisfied(self):
         allocated_time= 0
         for serviceinstance in self.stud_serviceinstances.all():
-            allocated_time += serviceinstance.duration
+            if serviceinstance.scheduled_for.active:
+                allocated_time += serviceinstance.duration
         return allocated_time >= self.total_time_req
 
 class ServiceInstance(models.Model):
     """Model representing a ServiceInstance"""
     service = models.ForeignKey('Service', related_name='stud_serviceinstances', on_delete=models.SET_NULL, null=True, help_text='The particular service this belongs to')
     DAYS = (
-        ('M','Monday'),
-        ('Tu','Tuesday'),
-        ('W','Wednesday'),
-        ('Th','Thursday'),
-        ('F','Friday'),
+        ('Monday','Monday'),
+        ('Tuesday','Tuesday'),
+        ('Wednesday','Wednesday'),
+        ('Thursday','Thursday'),
+        ('Friday','Friday'),
         )
 
     day = models.CharField(
-        max_length=2,
+        max_length=9,
         choices=DAYS,
         help_text='Day for the service')
-    duration = models.IntegerField(help_text='Enter duration of this service (in minutes)')
+
+    time_start = models.TimeField(default=timezone.now, blank=True)
+    time_end = models.TimeField(default=timezone.now, blank=True)
     scheduled_for = models.ForeignKey('Schedule', related_name='sched_serviceinstances', on_delete=models.SET_NULL, null=True)
 
+    @property
+    def duration(self):
+        if self.time_start != None and self.time_end != None:   # check because time_start and time_end can be blank
+            start = timedelta(hours=self.time_start.hour, minutes=self.time_start.minute, seconds=self.time_start.second)
+            end = timedelta(hours=self.time_end.hour, minutes=self.time_end.minute, seconds=self.time_end.second)
+            time = end - start
+            duration = int(time.total_seconds() / 60)
+            return duration
+    
     def __str__(self):
         """String for representing the Model "ServiceInstance" object."""
-        return f'{self.service}: {self.day} {self.duration}'
+        return f'{self.service}: {self.day} {self.time_start} - {self.time_end} {self.duration}'
 
+    def get_absolute_url(self):
+        """Returns a URL for displaying the details of this Service Instance"""
+        return reverse('serviceinstance-detail', args=[str(self.id)])
+    
 class Schedule(models.Model):
     """Model representing a Schedule"""
     title = models.CharField(max_length=200, help_text='Enter title for this schedule')
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Unique ID for this student')
+    active = models.BooleanField(default=False)
+
+    # Function to represent the constraint of one model having the "active"
+    # field to be True
+    # This function was found at: https://stackoverflow.com/questions/44718872/django-model-where-only-one-row-can-have-active-true
+    def save(self, *args, **kwargs):
+        if self.active:
+            queryset = type(self).objects.filter(active=True)
+            if self.pk:
+                queryset = queryset.exclude(pk=self.pk)
+            queryset.update(active=False)
+        super(Schedule, self).save(*args, **kwargs)
 
     def __str__(self):
         """String representing the Model "Schedule" object."""

@@ -1,0 +1,11 @@
+{% extends "base_template.html" %}
+
+{% block content %}
+    <h1>{{serviceinstance}}</h1>
+    <form action="{% url 'update-serviceinstance' serviceinstance.id %}">
+        <input type="submit" value="Update service appt">
+    </form>
+    <form action="{% url 'delete-serviceinstance' serviceinstance.id %}">
+        <input type="submit" value="Delete service appt">
+    </form>
+{% endblock %}

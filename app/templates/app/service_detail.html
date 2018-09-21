@@ -9,4 +9,10 @@
             <li>{{serviceinstance}}</li>
         {% endfor %}
     </ul>
+    <form action="{% url 'update-service' service.id %}">
+        <input type="submit" value="Update service"/>
+    </form>
+    <form action="{% url 'delete-service' service.id %}">
+        <input type="submit" value="Delete service"/>
+    </form>
 {% endblock %}

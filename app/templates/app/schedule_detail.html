@@ -3,17 +3,46 @@
 {% block content %}
     <h1>{{schedule.title}}</h1>
     <p>{{schedule.start_date}} - {{schedule.end_date}}</p>
+    <form action="{% url 'update-schedule' schedule.id %}">
+        <input type="submit" value="Update schedule">
+    </form>
+    <form action="{% url 'delete-schedule' schedule.id %}">
+        <input type="submit" value="Delete schedule">
+    </form>
     <hr>
-    <table>
+    {{html|safe}}
+    <table id="schedule-table">
         <tr>
-            {% for key in appts.keys %}
-                <th>{{key}}</th>
+            {% for day in appts.keys %}
+                <th>
+                    {{day}}
+                    <form action="{% url 'create-serviceinstance' schedule.id %}">
+                        <input type="submit" value="Add service appt">
+                    </form>
+                </th>
             {% endfor %}
         </tr>
         <tr>
-            {% for key, value in appts.items %}
-                <td>{{value}}</td>
+            {% for day, appt_list in appts.items %}
+                <td>
+                    {% for appt in appt_list %}
+                        <a href="{% url 'serviceinstance-detail' appt.id %}"">{{appt}}</a>
+                    {% endfor %}
+                </td>
             {% endfor %}
         </tr>
+        <!-- <tr>
+            <form action="{% url 'create-schedule' %}">
+                <input type="submit" value="Add schedule">
+            </form>
+        </tr> -->
     </table>
+    {% for student in student_list %}
+        <h4><a href="{{ student.get_absolute_url }}">{{student}}</a></h4>
+        {% if student.is_serviced %}
+            <h5 class="text-success">Services: Satisfied</h5>
+        {% else %}
+            <h5 class="text-danger">Services: Not Satisfied</h5>
+        {% endif %}
+    {% endfor %}
 {% endblock %}

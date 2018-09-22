@@ -10,33 +10,41 @@
         <input type="submit" value="Delete schedule">
     </form>
     <hr>
-    {{html|safe}}
-    <table id="schedule-table">
+
+    <table id="schedule-table2">
         <tr>
-            {% for day in appts.keys %}
-                <th>
+            <th></th>
+            <th>7:00 AM</th>
+            <th>8:00 AM</th>
+            <th>9:00 AM</th>
+            <th>10:00 AM</th>
+            <th>11:00 AM</th>
+            <th>12:00 PM</th>
+            <th>1:00 PM</th>
+            <th>2:00 PM</th>
+            <th>3:00 PM</th>
+        </tr>
+        {% for day, time_slots in appts.items %}
+            <tr>
+                <td>
                     {{day}}
                     <form action="{% url 'create-serviceinstance' schedule.id %}">
                         <input type="submit" value="Add service appt">
                     </form>
-                </th>
-            {% endfor %}
-        </tr>
-        <tr>
-            {% for day, appt_list in appts.items %}
-                <td>
-                    {% for appt in appt_list %}
-                        <a href="{% url 'serviceinstance-detail' appt.id %}"">{{appt}}</a>
-                    {% endfor %}
                 </td>
-            {% endfor %}
-        </tr>
-        <!-- <tr>
-            <form action="{% url 'create-schedule' %}">
-                <input type="submit" value="Add schedule">
-            </form>
-        </tr> -->
+                {% for services in time_slots.values %}
+                    <td>
+                        <ul>
+                        {% for serviceinstance in services %}
+                            <li><a href="{{serviceinstance.get_absolute_url}}">{{serviceinstance}}</a></li>
+                        {% endfor %}
+                        </ul>
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
     </table>
+
     {% for student in student_list %}
         <h4><a href="{{ student.get_absolute_url }}">{{student}}</a></h4>
         {% if student.is_serviced %}

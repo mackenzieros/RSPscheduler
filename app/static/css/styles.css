@@ -4,31 +4,11 @@
     list-style: none;
 }
 
-#schedule-table {
-    width: 1000px;
-}
-#schedule-table tr {
-    display: block; 
-    float: left;
-}
-
-#schedule-table th {
+#schedule-table2 td {
     text-align: center;
-    padding: 10px 10px 10px 10px;
 }
 
-#schedule-table th, #schedule-table td {
-    display: block;
-    height: 100px;
-}
-#schedule-table th, #schedule-table td {
-    border: 1px solid black;
-}
-
-#schedule-table2 th, #schedule-table2 td {
-    border: 1px solid black; 
-}
-
-#schedule-table2 th {
+#schedule-table2 {
     padding: 5px 20px 5px 20px;
+    border: 1px solid black;
 }

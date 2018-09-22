@@ -2,19 +2,23 @@ from django.shortcuts import render
 from app.models import Student, Service, ServiceInstance, Schedule
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+
 # Following 2 implement requirements for user to
 # be logged in or have the right permissions
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-# Finds a specific object using the primary key, or returns 404 if not found
-from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
-# Forms
-from app.forms import CreateServiceForm, CreateScheduleForm, CreateServiceInstanceForm
-# For redirecting after form submission
+
+from django.shortcuts import get_object_or_404  # finds a specific object using the primary key, or returns 404 if not found
+from django.urls import reverse_lazy # reverses the url for redirection
+
+from app.forms import CreateServiceForm, CreateScheduleForm, CreateServiceInstanceForm  # custom forms
+
+# Following 2 imports are for redirecting after form submission
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
+import datetime # for creating time objects in the schedule detail view
+import pprint # for debugging
 
 # Create your views here.
 
@@ -61,38 +65,48 @@ def ScheduleDetailView(request, pk):
     schedule = get_object_or_404(Schedule, pk=pk)
     students = Student.objects.all()
     html = ""
-    # Construct a dictionary to map all of the service appointments to their days, this is
-    # to make rendering the schedule easier.
-    appts = {
-        "Monday": [],
-        "Tuesday": [],
-        "Wednesday": [],
-        "Thursday": [],
-        "Friday": [],
+
+    def get_time_slot():
+        # Returns a time_slot dict
+        time_slot = {
+            (datetime.time(hour=7), "AM"): [],
+            (datetime.time(hour=8), "AM"): [],
+            (datetime.time(hour=9), "AM"): [],
+            (datetime.time(hour=10), "AM"): [],
+            (datetime.time(hour=11), "AM"): [],
+            (datetime.time(hour=12), "PM"): [],
+            (datetime.time(hour=1), "PM"): [],
+            (datetime.time(hour=2), "PM"): [],
+            (datetime.time(hour=3), "PM"): [],
         }
-    times = [""]
-    for serviceinstance in schedule.sched_serviceinstances.all():   # here I am referring to the related_name of the model to backtrace the one-to-many relationship
-        appts[serviceinstance.day].append(serviceinstance)
-##    html += """
-##<table id="schedule-table2">
-##    <tr>
-##        <th></th><th>7:00 AM</th><th>8:00 AM</th><th>9:00 AM</th><th>10:00 AM</th><th>11:00 AM</th><th>12:00 PM</th><th>1:00 PM</th><th>2:00 PM</th><th>3:00 PM</th>
-##    </tr>
-##"""
-##    for days, appts in appts.items():
-##        html += """
-##    <tr>
-##""" + "<td>" +str(days) + "</td>" + """
-##    </tr>
-##"""
-##        for item in appts:
-##            print(item)
-##    html += "</table>"
+        return time_slot
+    
+    # Construct a dict of dicts to map all of the service appointments to their days and time slots
+    # For example, a Monday service at 10AM would go to the Monday dict, and then into the 10AM dict
+    # I use a datetime object because it's easier to reference the hours, minutes, etc.
+
+    appts = {
+        "Monday": get_time_slot(),
+        "Tuesday": get_time_slot(),
+        "Wednesday": get_time_slot(),
+        "Thursday": get_time_slot(),
+        "Friday": get_time_slot(),
+        }
+
+    # Goes through every service instance and maps it into the appts dict
+    # with the appropriate service day and time
+    for serviceinstance in schedule.sched_serviceinstances.all():   # using the related_name of the model to backtrace its one-to-many relationship
+        for day_slot in appts.keys():
+            if day_slot == serviceinstance.day:
+                for time_slot in appts[day_slot].keys():
+                    if serviceinstance.time_start and serviceinstance.time_start.hour == time_slot[0].hour:  # make sure the service instance has a time_start field to begin with,
+                        appts[day_slot][time_slot].append(serviceinstance)                                   # then check if the service instance start hour can be mapped to a time slot,
+                                                                                                             # if so, add the service to that day, and to the correct time slot!
+    #pprint.pprint(appts)  
     context = {
         "schedule": schedule,
         "student_list": students,
         "appts": appts,
-        "html": html,
         }
     return render(request, "app/schedule_detail.html", context)
 
@@ -116,6 +130,7 @@ class StudentCreate(LoginRequiredMixin, CreateView):
     login_url = '/accounts/login/'
     model = Student
     fields = '__all__'
+    success_url = reverse_lazy('student-list')
 
 class StudentUpdate(LoginRequiredMixin, UpdateView):
     login_url = '/accounts/login/'
@@ -225,4 +240,3 @@ class ServiceInstanceDelete(LoginRequiredMixin, DeleteView):
     login_url = '/accounts/login/'
     model = ServiceInstance
     success_url = reverse_lazy('schedule-list')
-

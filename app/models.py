@@ -67,7 +67,7 @@ class Service(models.Model):
         
     def __str__(self):
         """String for representing the Model "Service" object."""
-        return f'{self.subject} {self.service_type}: {str(self.student)}'
+        return f'{str(self.student)}\n{self.subject} {self.service_type}'
 
     def get_absolute_url(self):
         """Returns a URL for displaying all instances of this service"""
@@ -121,7 +121,8 @@ class ServiceInstance(models.Model):
     
     def __str__(self):
         """String for representing the Model "ServiceInstance" object."""
-        return f'{self.service}: {self.day} {self.time_start} - {self.time_end} {self.duration}'
+        return '{service}\n{day}\n{start} - {end}'.format(service=self.service, day=self.day,
+                                                                                         start=self.time_start.strftime("%I:%M"), end=self.time_end.strftime("%I:%M"))
 
     def get_absolute_url(self):
         """Returns a URL for displaying the details of this Service Instance"""

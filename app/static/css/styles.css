@@ -1,7 +1,6 @@
 #schedule-table2 td {
     text-align: center;
 }
-
 th, td {
     border: 1px solid black;
 }
@@ -9,8 +8,17 @@ th, td {
 #schedule-table2 {
     padding: 5px 20px 5px 20px;
     border: 1px solid black;
+    width: 1500px;
 }
 
 h5 {
-    margin-top: 5px;
+    margin-top: 6px;
+}
+
+.schedule-services {
+    font-size: 12px;
+}
+
+ul.serviceappts {
+    list-style-type: square;
 }

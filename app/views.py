@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404  # finds a specific object using the primary key, or returns 404 if not found
 from django.urls import reverse_lazy # reverses the url for redirection
 
-from app.forms import CreateServiceForm, CreateScheduleForm, CreateServiceInstanceForm  # custom forms
+from app.forms import CreateServiceForm, CreateScheduleForm, CreateServiceInstanceForm, CreateStudentForm  # custom forms
 
 # Following 2 imports are for redirecting after form submission
 from django.http import HttpResponseRedirect
@@ -125,12 +125,26 @@ class ServiceInstanceDetailView(LoginRequiredMixin, generic.DetailView):
     login_url = '/accounts/login/'
     model = ServiceInstance
 
-# The following view classes are for generic and model forms
-class StudentCreate(LoginRequiredMixin, CreateView):
-    login_url = '/accounts/login/'
-    model = Student
-    fields = '__all__'
-    success_url = reverse_lazy('student-list')
+@login_required
+def StudentCreate(request):
+    # If the request is a POST, check if the fields are valid and the inputs, clean.
+    # Save if valid.
+    # If the request is not a POST, but a GET, add the initial teacher value
+    if request.method == 'POST':
+        student_create_form = CreateStudentForm(request.POST)
+
+        if student_create_form.is_valid():
+            new_student = Student(**student_create_form.cleaned_data)
+            new_student.save()
+            return HttpResponseRedirect(reverse('student-list'))    # redirects user to the student list page
+    else:
+        student_create_form = CreateStudentForm(initial={'teacher': request.user})
+    
+    context = {
+        'form': student_create_form,
+        }
+    
+    return render(request, 'app/student_form.html', context)
 
 class StudentUpdate(LoginRequiredMixin, UpdateView):
     login_url = '/accounts/login/'

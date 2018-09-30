@@ -81,7 +81,8 @@ class Service(models.Model):
         allocated_time= 0
         for serviceinstance in self.stud_serviceinstances.all():
             if serviceinstance.scheduled_for.active:
-                allocated_time += serviceinstance.duration
+                if serviceinstance.duration:
+                    allocated_time += serviceinstance.duration
         return allocated_time >= self.total_time_req
 
 class ServiceInstance(models.Model):
@@ -109,8 +110,13 @@ class ServiceInstance(models.Model):
         if self.time_start != None and self.time_end != None:   # check because time_start and time_end can be blank
             start = timedelta(hours=self.time_start.hour, minutes=self.time_start.minute, seconds=self.time_start.second)
             end = timedelta(hours=self.time_end.hour, minutes=self.time_end.minute, seconds=self.time_end.second)
+            # must reformat the timedelta if the hour is at or beyond 12 to fit 12-hour clock format
+            if start.seconds // 3600 >= 12:
+                start = timedelta(hours=((start.seconds//3600) - 12), minutes=((start.seconds%3600)//60), seconds=start.seconds%60)
+            if end.seconds // 3600 >= 12:
+                end = timedelta(hours=((end.seconds//3600) - 12), minutes=((end.seconds%3600)//60), seconds=end.seconds%60)
             time = end - start
-            duration = int(time.total_seconds() / 60)
+            duration = abs(int(time.total_seconds() / 60))
             return duration
     
     def __str__(self):

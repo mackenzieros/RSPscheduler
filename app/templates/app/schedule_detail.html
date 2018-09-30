@@ -1,37 +1,44 @@
 {% extends "base_template.html" %}
 
 {% block content %}
-    <h1>{{schedule.title}}</h1>
-    <p>{{schedule.start_date}} - {{schedule.end_date}}</p>
-    <form action="{% url 'update-schedule' schedule.id %}">
-        <input type="submit" value="Update schedule">
-    </form>
-    <form action="{% url 'delete-schedule' schedule.id %}">
-        <input type="submit" value="Delete schedule">
-    </form>
+    <div class="jumbotron">
+        <h1>{{schedule.title}}</h1>
+        <p>{{schedule.start_date}} - {{schedule.end_date}}</p>
+        <hr class="my-4">
+        <form action="{% url 'update-schedule' schedule.id %}">
+            <button type="submit" class="btn btn-primary">Update schedule</button>
+        </form>
+        <br>
+        <form action="{% url 'delete-schedule' schedule.id %}">
+            <button type="submit" class="btn btn-primary">Delete schedule</button>
+        </form>
+    </div>
     <hr>
 
-    <table id="schedule-table2">
-        <tr>
-            <th></th>
-            <th>7:00 AM</th>
-            <th>8:00 AM</th>
-            <th>9:00 AM</th>
-            <th>10:00 AM</th>
-            <th>11:00 AM</th>
-            <th>12:00 PM</th>
-            <th>1:00 PM</th>
-            <th>2:00 PM</th>
-            <th>3:00 PM</th>
-        </tr>
+    <table class ="table table-hover" id="schedule-table2">
+        <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">7:00 AM</th>
+                <th scope="col">8:00 AM</th>
+                <th scope="col">9:00 AM</th>
+                <th scope="col">10:00 AM</th>
+                <th scope="col">11:00 AM</th>
+                <th scope="col">12:00 PM</th>
+                <th scope="col">1:00 PM</th>
+                <th scope="col">2:00 PM</th>
+                <th scope="col">3:00 PM</th>
+            </tr>
+        </thead>
+        <tbody>
         {% for day, time_slots in appts.items %}
             <tr>
-                <td>
+                <th scope="row">
                     {{day}}
                     <form action="{% url 'create-serviceinstance' schedule.id %}">
-                        <input type="submit" value="Add service appt">
+                            <button type="submit" class="btn btn-primary">Add appt</button>
                     </form>
-                </td>
+                </th>
                 {% for services in time_slots.values %}
                     <td>
                         <ul>
@@ -43,14 +50,17 @@
                 {% endfor %}
             </tr>
         {% endfor %}
+        </tbody>
     </table>
 
     {% for student in student_list %}
         <h4><a href="{{ student.get_absolute_url }}">{{student}}</a></h4>
-        {% if student.is_serviced %}
-            <h5 class="text-success">Services: Satisfied</h5>
+        {% if student.services.all|length == 0 %}
+            <span class="badge badge-warning">No Services Added</span>
+        {% elif student.is_serviced %}
+            <span class="badge badge-success">Satisfied</span>
         {% else %}
-            <h5 class="text-danger">Services: Not Satisfied</h5>
+            <span class="badge badge-danger">Not Satisfied</span>
         {% endif %}
     {% endfor %}
 {% endblock %}

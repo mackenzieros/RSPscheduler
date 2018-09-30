@@ -22,3 +22,9 @@ class CreateServiceInstanceForm(ModelForm):
         model = ServiceInstance
         fields = '__all__'
         widgets = {'scheduled_for': forms.HiddenInput()}
+
+class CreateStudentForm(ModelForm):
+    class Meta:
+        model = Student
+        fields = '__all__'
+        widgets = {'teacher': forms.HiddenInput()}

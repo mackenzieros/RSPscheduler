@@ -3,16 +3,14 @@
 {% block content %}
     <h1>My Schedules: </h1>
     <form action="{% url 'create-schedule' %}">
-        <input type="submit" value="Add schedule">
+        <button type="submit" class="btn btn-secondary">Add schedule</button>
     </form>
     <br>
     {% if schedule_list %}
-    <ol>
+    <div class="list-group">
         {% for schedule in schedule_list %}
-            <li>
-                <a href="{{schedule.get_absolute_url}}">{{schedule.title}}</a>
-            </li>
+            <a href="{{schedule.get_absolute_url}}" class="list-group-item list-group-item-action">{{schedule.title}}</a>
         {% endfor %}
-    </ol>
+    </div>
     {% endif %}
 {% endblock %}

@@ -10,7 +10,7 @@ urlpatterns = [
     path('studentlist/createstudent', staff_member_required(views.StudentCreate), name='create-student'), 
     path('student/<uuid:pk>', staff_member_required(views.StudentDetailView.as_view()), name='student-detail'),
     path('student/<uuid:pk>/updatestudent', staff_member_required(views.StudentUpdate.as_view()), name='update-student'),
-    path('student/<uuid:pk>/deletestudent', staff_member_required(views.StudentDelete.as_view()), name='delete-student'),
+    path('student/<uuid:pk>/deletestudent', staff_member_required(views.StudentDelete), name='delete-student'),
     # Schedule URLS
     path('schedulelist/', staff_member_required(views.ScheduleListView.as_view()), name='schedule-list'),
     path('schedulelist/createschedule', staff_member_required(views.ScheduleCreate), name='create-schedule'),

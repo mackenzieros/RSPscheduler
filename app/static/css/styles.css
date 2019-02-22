@@ -11,6 +11,11 @@ th, td {
     width: 1500px;
 }
 
+#student_delete_confirm_button {
+    margin-left: 10%;
+    padding-right: 50px;
+}
+
 h5 {
     margin-top: 6px;
 }

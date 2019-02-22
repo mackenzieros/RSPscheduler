@@ -1,12 +1,27 @@
 {% extends "base_template.html" %}
 
 {% block content %}
+    {% load staticfiles %}
+    <script type="text/javascript" src="{% static 'js/my_script.js' %}"></script>
+
     <form action="{% url 'update-student' student.id %}">
         <input type="submit" value="Update student"/>
     </form>
-    <form action="{% url 'delete-student' student.id %}">
-        <input type="submit" value="Delete student"/>
-    </form>
+    <button id="delete_button">Delete student</button>
+
+    <!-- Confirm pop-up dialog box -->
+    <dialog id="confirm_delete">
+        <form action="{% url 'delete-student' student.id %}" method="POST">
+            {% csrf_token %}
+            <p>Are you sure you wish to delete <strong>{{student.last_name}}, {{student.first_name}}?</strong></p>
+            <br>
+            <span id="student_delete_confirm_button">
+                <input type="submit" value="Yes, delete" class="btn btn-md btn-primary"/>
+            </span>
+            <a href="{% url 'student-detail' student.id %}" class="btn btn-secondary btn-md">Cancel</a>
+        </form>
+    </dialog>
+
     <h1>{{student.last_name}}, {{student.middle_name|default_if_none:""}} {{student.first_name}}</h1>
     <p>Services have been allocated: {{ student.is_serviced }}</p>
 {% endblock %}

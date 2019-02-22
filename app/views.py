@@ -19,6 +19,9 @@ from django.urls import reverse
 
 import datetime # for creating time objects in the schedule detail view
 import pprint # for debugging
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 
@@ -138,8 +141,9 @@ def StudentCreate(request):
             new_student.save()
             return HttpResponseRedirect(reverse('student-list'))    # redirects user to the student list page
     else:
-        student_create_form = CreateStudentForm(initial={'teacher': request.user})
-    
+        student_create_form = CreateStudentForm()
+        student_create_form['teacher'].initial = request.user
+
     context = {
         'form': student_create_form,
         }
@@ -151,10 +155,21 @@ class StudentUpdate(LoginRequiredMixin, UpdateView):
     model = Student
     fields = '__all__'
 
-class StudentDelete(LoginRequiredMixin, DeleteView):
-    login_url = '/accounts/login/'
-    model = Student
-    success_url = reverse_lazy('student-list')
+##class StudentDelete(LoginRequiredMixin, DeleteView):
+##    login_url = '/accounts/login/'
+##    model = Student
+##    success_url = reverse_lazy('student-list')
+@login_required
+def StudentDelete(request, pk):
+    # Find the student to delete
+    student = get_object_or_404(Student, pk=pk)
+
+    if student.teacher != request.user:
+        return HttpResponseForbidden()
+    
+    if request.method == 'POST':
+        student.delete()
+    return HttpResponseRedirect(reverse('student-list'))
 
 @login_required
 def ServiceCreate(request, pk):

@@ -3,17 +3,17 @@
 <head>
   {% block title %}<title>RSP Scheduler</title>{% endblock %}
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous"> -->
-  <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.1.3/flatly/bootstrap.min.css" rel="stylesheet" integrity="sha384-gJWVjz180MvwCrGGkC4xE5FjhWkTxHIR/+GgT8j2B3KKMgh6waEjPgzzh7lL7JZT" crossorigin="anonymous">  {% load static %}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.1.3/flatly/bootstrap.min.css" rel="stylesheet" integrity="sha384-gJWVjz180MvwCrGGkC4xE5FjhWkTxHIR/+GgT8j2B3KKMgh6waEjPgzzh7lL7JZT" crossorigin="anonymous">  
+  {% load staticfiles %}
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <a class="navbar-brand" href="{% url 'index' %}">RSPscheduler</a>
 
-    <div class="navbar-collapse collapse" id="navbarColor01">
-        <ul class="navbar-nav mr-auto">
+    <div class="navbar navbar-expand navbar-fixed-top" id="navbarColor01">
+        <ul class="navbar-nav pt-1">
           <li class="nav-item"><a class="nav-link" data-toggle="tab" href="{% url 'index' %}">Home</a></li>
           {% if user.is_authenticated %}
             <hr>

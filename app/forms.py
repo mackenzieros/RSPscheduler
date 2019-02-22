@@ -29,4 +29,5 @@ class CreateStudentForm(ModelForm):
     class Meta:
         model = Student
         fields = '__all__'
-        widgets = {'teacher': forms.HiddenInput()}
+        widgets = {'teacher': forms.HiddenInput(),
+                   'id': forms.HiddenInput()}

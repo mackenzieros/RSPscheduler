@@ -6,7 +6,7 @@
 
 <p>Are you sure you want to delete the student: {{student}}?</p>
 
-<form action="" method="POST">
+<form action="{% url 'delete-student' student.id %}" method="post">
   {% csrf_token %}
   <input type="submit" value="Yes, delete.">
 </form>
